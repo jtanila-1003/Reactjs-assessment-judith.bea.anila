@@ -1,5 +1,5 @@
 import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BooksContext } from '../../store/ContextProvider';
 
 const AddBookComponent = () => {
@@ -11,7 +11,6 @@ const AddBookComponent = () => {
   const [author, Authorchange] = useState('');
   const [status, Statuschange] = useState(true);
 
-  const navigate = useNavigate();
 
   const handlesubmit = (e) => {
     e.preventDefault();
