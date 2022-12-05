@@ -22,7 +22,6 @@ const EditBookComponent = () => {
     Statuschange(book.status);
   }, [context, params.id]);
 
-  const navigate = useNavigate();
 
   const handlesubmit = (e) => {
     e.preventDefault();
