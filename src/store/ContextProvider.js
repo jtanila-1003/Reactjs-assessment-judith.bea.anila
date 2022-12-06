@@ -23,6 +23,21 @@ const ContextProvider = (props) => {
     return books[books.findIndex((book) => +book.id === +id)];
   };
 
+  const reserveBook = (id) => {
+    const index = books.findIndex((book) => +book.id === +id);
+    const updatedBooks = [...books];
+    updatedBooks[index] = {
+      ...updatedBooks[index],
+      status: !updatedBooks[index].status,
+    };
+    setBooks(updatedBooks);
+  };
+
+  const deleteBook = (id) => {
+    const updatedBooks = books.filter((book) => book.id !== id);
+    setBooks(updatedBooks);
+  };
+
   const updateBook = (id, updatedBook) => {
     const updatedBooks = [...books];
     const index = books.findIndex((book) => +book.id === +id);
@@ -39,6 +54,8 @@ const ContextProvider = (props) => {
     addBook: addBook,
     updateBook: updateBook,
     getBook: getBook,
+    reserveBook: reserveBook,
+    deleteBook: deleteBook,
   };
 
   return (

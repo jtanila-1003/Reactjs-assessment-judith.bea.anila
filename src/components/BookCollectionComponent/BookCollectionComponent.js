@@ -7,34 +7,29 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { BooksContext } from '../../store/ContextProvider';
-import { Link } from 'react-router-dom';
-
-// function createData(ID, BookTitle, Author, Price, Status) {
-//   return { ID, BookTitle, Author, Price, Status };
-// }
-
-// const rows = [
-//   createData(1, 'Bible', 'God', 1000, 'Reserved'),
-//   createData(
-//     2,
-//     'Stupid is Forever',
-//     'Miriam Defensor Santiago',
-//     250,
-//     'Reserved'
-//   ),
-//   createData(
-//     3,
-//     'Stupid is Forevermore',
-//     'Miriam Defensor Santiago',
-//     250,
-//     'Available'
-//   ),
-//   createData(4, 'Nectar in a Sieve', 'Kamala Markandaya', 350, 'Available'),
-//   createData(5, 'Death on the Nile', 'Agatha Christie', 558, 'Available'),
-// ];
+import { useNavigate } from 'react-router-dom';
 
 const BookCollectionComponent = () => {
   const context = useContext(BooksContext);
+  const navigate = useNavigate();
+
+  const editHandler = (e, id) => {
+    e.preventDefault();
+    navigate(`/editbooks/${id}`);
+  };
+
+  const deleteHandler = (e, id) => {
+    e.preventDefault();
+    const x = window.confirm('Are you sure you want to delete this book?');
+    if (x) {
+      context.deleteBook(id);
+    }
+  };
+
+  const reserveHandler = (e, id) => {
+    e.preventDefault();
+    context.reserveBook(id);
+  };
 
   return (
     <TableContainer component={Paper}>
@@ -63,13 +58,29 @@ const BookCollectionComponent = () => {
               <TableCell align="center">{row.description}</TableCell>
               <TableCell align="center">{row.author}</TableCell>
               <TableCell align="center">
-                <img src={row.image} alt="" />
+                <img
+                  src={row.image}
+                  alt=""
+                  style={{
+                    width: '80px',
+                    height: '120px',
+                    objectFit: 'cover',
+                  }}
+                />
               </TableCell>
               <TableCell align="center">
                 {row.status ? 'Available' : 'Reserved'}
               </TableCell>
               <TableCell>
-                <Link to={`/editbooks/${row.id}`}>Update</Link>
+                {row.status ? (
+                  <button onClick={(e) => reserveHandler(e, row.id)}>
+                    Reserve
+                  </button>
+                ) : null}
+                <button onClick={(e) => editHandler(e, row.id)}>Edit</button>
+                <button onClick={(e) => deleteHandler(e, row.id)}>
+                  Delete
+                </button>
               </TableCell>
             </TableRow>
           ))}

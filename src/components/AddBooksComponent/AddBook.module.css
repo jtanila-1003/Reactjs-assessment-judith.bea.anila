@@ -1,0 +1,7 @@
+.helperText {
+  color: blue;
+}
+
+.MuiOutlinedInput-root.Mui-error {
+  color: red;
+}

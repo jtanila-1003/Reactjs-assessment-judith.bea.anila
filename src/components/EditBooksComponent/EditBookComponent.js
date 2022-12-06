@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { BooksContext } from '../../store/ContextProvider';
 
 const EditBookComponent = () => {
@@ -24,6 +24,11 @@ const EditBookComponent = () => {
 
   const navigate = useNavigate();
 
+  const reserveHandler = (e, id) => {
+    e.preventDefault();
+    context.reserveBook(id);
+  };
+
   const handlesubmit = (e) => {
     e.preventDefault();
     const bookdata = {
@@ -38,7 +43,8 @@ const EditBookComponent = () => {
     BookTitlechange('');
     DescriptionChange('');
     Authorchange('');
-    Statuschange(false);
+    Statuschange(true);
+    navigate('/');
   };
 
   return (
@@ -60,9 +66,6 @@ const EditBookComponent = () => {
                       onChange={(e) => BookTitlechange(e.target.value)}
                       className="form-control"
                     ></input>
-                    {booktitle.length === 0 && (
-                      <span className="text-danger">Enter the Book Title</span>
-                    )}
                   </div>
                 </div>
                 <div className="col-lg-12">
@@ -74,9 +77,6 @@ const EditBookComponent = () => {
                       onChange={(e) => DescriptionChange(e.target.value)}
                       className="form-control"
                     ></input>
-                    {description.length === 0 && (
-                      <span className="text-danger">Enter the description</span>
-                    )}
                   </div>
                 </div>
                 <div className="col-lg-12">
@@ -100,26 +100,22 @@ const EditBookComponent = () => {
                     ></input>
                   </div>
                 </div>
-
-                <div className="col-lg-12">
-                  <div className="form-check">
-                    <input
-                      checked={status}
-                      onChange={(e) => Statuschange(e.target.checked)}
-                      type="checkbox"
-                      className="form-check-input"
-                    ></input>
-                    <label className="form-check-label">Is Available</label>
-                  </div>
-                </div>
                 <div className="col-lg-12">
                   <div className="form-group">
+                    {status ? null : (
+                      <button
+                        className="btn btn-success"
+                        onClick={(e) => reserveHandler(e, params.id)}
+                      >
+                        Remove Reservation
+                      </button>
+                    )}
+
+                    <br />
+
                     <button className="btn btn-success" type="submit">
                       Save
                     </button>
-                    <Link to="/" className="btn btn-danger">
-                      Back
-                    </Link>
                   </div>
                 </div>
               </div>

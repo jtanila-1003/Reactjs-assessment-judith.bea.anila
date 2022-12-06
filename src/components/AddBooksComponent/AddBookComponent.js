@@ -1,48 +1,75 @@
 import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BooksContext } from '../../store/ContextProvider';
 
 const AddBookComponent = () => {
   const context = useContext(BooksContext);
-
-  const [booktitle, BookTitlechange] = useState('');
-  const [description, DescriptionChange] = useState('');
-  const [image, ImageChange] = useState('');
-  const [author, Authorchange] = useState('');
-  const [status, Statuschange] = useState(true);
-
+  // const [booktitle, BookTitlechange] = useState('');
+  // const [description, DescriptionChange] = useState('');
+  // const [image, ImageChange] = useState('');
+  // const [author, Authorchange] = useState('');
+  const [formErrors, setFormErrors] = useState({});
   const navigate = useNavigate();
+  const initialValue = {
+    bookTitle: '',
+    description: '',
+    image: '',
+    author: '',
+  };
+  const [formValues, setFormValues] = useState(initialValue);
+
+  const checkValidation = () => {
+    const errors = {};
+
+    if (!formValues.bookTitle) {
+      errors.bookTitle = 'Title is required';
+    }
+
+    if (!formValues.description) {
+      errors.description = 'Description is required';
+    }
+
+    if (!formValues.author) {
+      errors.author = 'Author is required';
+    }
+
+    if (!formValues.image) {
+      errors.image = 'Image url is required';
+    }
+
+    return errors;
+  };
 
   const handlesubmit = (e) => {
     e.preventDefault();
-    const bookdata = {
-      id: Math.floor(Math.random() * 1000 + 1),
-      title: booktitle,
-      description: description,
-      image: image,
-      author: author,
-      status: status,
-    };
-    context.addBook(bookdata);
+    const errors = checkValidation();
 
-    BookTitlechange('');
-    DescriptionChange('');
-    ImageChange('');
-    Authorchange('');
-    Statuschange(false);
+    if (Object.keys(errors).length === 0) {
+      const bookdata = {
+        id: Math.floor(Math.random() * 1000 + 1),
+        title: formValues.bookTitle,
+        description: formValues.description,
+        image: formValues.image,
+        author: formValues.author,
+        status: true,
+      };
 
-    // fetch('http://localhost:3000/', {
-    //   method: 'POST',
-    //   headers: { 'content-type': 'application/json' },
-    //   body: JSON.stringify(bookdata),
-    // })
-    //   .then((res) => {
-    //     alert('Saved successfully.');
-    //     navigate('/');
-    //   })
-    //   .catch((err) => {
-    //     console.log(err.message);
-    //   });
+      context.addBook(bookdata);
+      setFormValues(initialValue);
+      setFormErrors({});
+      navigate('/');
+    } else {
+      setFormErrors(errors);
+    }
+  };
+
+  const changeHandler = (e) => {
+    const { name, value } = e.target;
+    const errors = checkValidation();
+    setFormErrors(errors || {});
+    setFormValues((prevState) => {
+      return { ...prevState, [name]: value };
+    });
   };
 
   return (
@@ -58,78 +85,69 @@ const AddBookComponent = () => {
                 <div className="row">
                   <div className="col-lg-12">
                     <div className="form-group">
-                      <label>BookTitle</label>
+                      <label>Book Title</label>
                       <input
-                        required
-                        value={booktitle}
-                        onChange={(e) => BookTitlechange(e.target.value)}
+                        value={formValues.bookTitle}
+                        name="bookTitle"
+                        onChange={changeHandler}
                         className="form-control"
                       ></input>
-                      {booktitle.length === 0 && (
-                        <span className="text-danger">
-                          Enter the Book Title
-                        </span>
-                      )}
+                      <div className="text">
+                        <p style={{ color: 'red' }}>{formErrors.bookTitle}</p>
+                      </div>
                     </div>
                   </div>
                   <div className="col-lg-12">
                     <div className="form-group">
                       <label>Description</label>
                       <input
-                        required
-                        value={description}
-                        onChange={(e) => DescriptionChange(e.target.value)}
+                        value={formValues.description}
+                        name="description"
+                        onChange={changeHandler}
                         className="form-control"
                       ></input>
-                      {description.length === 0 && (
-                        <span className="text-danger">
-                          Enter the description
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Image</label>
-                      <input
-                        required
-                        value={image}
-                        onChange={(e) => ImageChange(e.target.value)}
-                        className="form-control"
-                      ></input>
-                    </div>
-                  </div>
 
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <label>Author</label>
-                      <input
-                        value={author}
-                        onChange={(e) => Authorchange(e.target.value)}
-                        className="form-control"
-                      ></input>
+                      <div className="text">
+                        <p style={{ color: 'red' }}>
+                          {' '}
+                          {formErrors.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="col-lg-12">
-                    <div className="form-check">
-                      <input
-                        checked={status}
-                        onChange={(e) => Statuschange(e.target.checked)}
-                        type="checkbox"
-                        className="form-check-input"
-                      ></input>
-                      <label className="form-check-label">Is Available</label>
+                    <div className="col-lg-12">
+                      <div className="form-group">
+                        <label>Image</label>
+                        <input
+                          value={formValues.image}
+                          name="image"
+                          onChange={changeHandler}
+                          className="form-control"
+                        ></input>
+                        <div className="text">
+                          <p style={{ color: 'red' }}>{formErrors.image}</p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="form-group">
-                      <button className="btn btn-success" type="submit">
-                        Save
-                      </button>
-                      <Link to="/" className="btn btn-danger">
-                        Back
-                      </Link>
+                    <div className="col-lg-12">
+                      <div className="form-group">
+                        <label>Author</label>
+                        <input
+                          value={formValues.author}
+                          name="author"
+                          onChange={changeHandler}
+                          className="form-control"
+                        ></input>
+                        <div className="text">
+                          <p style={{ color: 'red' }}>{formErrors.author}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-12">
+                      <div className="form-group">
+                        <button className="btn btn-success" type="submit">
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
